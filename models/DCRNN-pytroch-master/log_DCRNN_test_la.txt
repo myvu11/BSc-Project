@@ -1,0 +1,14 @@
+--------multi-step testing results--------
+Horizon 01, MAE: 2.24, MAPE: 0.0534, RMSE: 3.84
+Horizon 02, MAE: 2.38, MAPE: 0.0583, RMSE: 4.28
+Horizon 03, MAE: 2.50, MAPE: 0.0624, RMSE: 4.64
+Horizon 04, MAE: 2.60, MAPE: 0.0661, RMSE: 4.93
+Horizon 05, MAE: 2.69, MAPE: 0.0693, RMSE: 5.18
+Horizon 06, MAE: 2.77, MAPE: 0.0723, RMSE: 5.41
+Horizon 07, MAE: 2.84, MAPE: 0.0751, RMSE: 5.61
+Horizon 08, MAE: 2.91, MAPE: 0.0777, RMSE: 5.79
+Horizon 09, MAE: 2.97, MAPE: 0.0801, RMSE: 5.96
+Horizon 10, MAE: 3.03, MAPE: 0.0824, RMSE: 6.12
+Horizon 11, MAE: 3.09, MAPE: 0.0846, RMSE: 6.26
+Horizon 12, MAE: 3.14, MAPE: 0.0867, RMSE: 6.40
+Total time spent: 841.0748
