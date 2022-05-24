@@ -1,0 +1,2 @@
+# bachelor
+bachelor opgave 

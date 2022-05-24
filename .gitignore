@@ -1,0 +1,17 @@
+/models/Graph-WaveNet-master/data/
+/models/DCRNN-pytorch-master/data
+/models/GMAN-master/METR/data
+/models/GMAN-master/PeMS/data
+/models/GMAN-PyTorch-master/data
+/models/DCRNN-master/data
+/models/MTGNN-master/data
+/models/MTGNN-master/save
+
+\models\Graph-WaveNet-master\data\
+\models\DCRNN-pytorch-master\data
+\models\GMAN-master\METR\data
+\models\GMAN-master\PeMS\data
+\models\GMAN-PyTorch-master\data
+\models\DCRNN-master\data
+\models\MTGNN-master\data
+\models\MTGNN-master\save
