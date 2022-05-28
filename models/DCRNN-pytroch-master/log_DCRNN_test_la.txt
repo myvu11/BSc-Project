@@ -11,4 +11,4 @@ Horizon 09, MAE: 2.97, MAPE: 0.0801, RMSE: 5.96
 Horizon 10, MAE: 3.03, MAPE: 0.0824, RMSE: 6.12
 Horizon 11, MAE: 3.09, MAPE: 0.0846, RMSE: 6.26
 Horizon 12, MAE: 3.14, MAPE: 0.0867, RMSE: 6.40
-Total time spent: 841.0748
+Total time spent: 796.5059
