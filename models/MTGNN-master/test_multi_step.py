@@ -58,12 +58,13 @@ parser.add_argument('--propalpha',type=float,default=0.05,help='prop alpha')
 parser.add_argument('--tanhalpha',type=float,default=3,help='adj alpha')
 
 parser.add_argument('--log_test', type=str,default='log_MTGNN_test_la.txt',help='adj data path')
+parser.add_argument('--checkpoint',type=str,default='save/METR-LA/exp1_0.pth',help='checkpoint path')
 
 
 
 args = parser.parse_args()
 
-
+t1_test = time.time()
 # load data
 device = torch.device(args.device)
 dataloader = load_dataset(args.data, args.batch_size, args.batch_size, args.batch_size)
@@ -88,15 +89,21 @@ model = gtnet(args.gcn_true, args.buildA_true, args.gcn_depth, args.num_nodes,
                 seq_length=args.seq_in_len, in_dim=args.in_dim, out_dim=args.seq_out_len,
                 layers=args.layers, propalpha=args.propalpha, tanhalpha=args.tanhalpha, layer_norm_affline=True)
 
+cp = torch.load(args.checkpoint, map_location ='cpu')
+model.load_state_dict(cp)
+
+model = model.to(device)
+model.eval()
+
 print(args)
 print('The recpetive field size is', model.receptive_field)
 nParams = sum([p.nelement() for p in model.parameters()])
 print('Number of model parameters is', nParams)
 
-engine = Trainer(model, args.learning_rate, args.weight_decay, args.clip, args.step_size1, args.seq_out_len, scaler, device, args.cl)
+
 
 #test data
-t1_test = time.time()
+
 outputs = []
 realy = torch.Tensor(dataloader['y_test']).to(device)
 realy = realy.transpose(1, 3)[:, 0, :, :]
@@ -107,7 +114,7 @@ for iter, (x, y) in enumerate(dataloader['test_loader'].get_iterator()):
     testx = torch.Tensor(x).to(device)
     testx = testx.transpose(1, 3)
     with torch.no_grad():
-        preds = engine.model(testx)
+        preds = model(testx)
         preds = preds.transpose(1, 3)
     outputs.append(preds.squeeze())
 
