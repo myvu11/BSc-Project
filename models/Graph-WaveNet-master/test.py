@@ -92,6 +92,7 @@ def main():
     
     t2_test = time.time()
     print("Total test time spent: {:.4f}".format(t2_test-t1_test))
+    print("Total time in minutes: {:.2f}".format((t2_test-t1_test)/60))
     log = 'On average over 12 horizons, Test MAE: {:.4f}, Test MAPE: {:.4f}, Test RMSE: {:.4f}'
     print(log.format(np.mean(amae),np.mean(amape),np.mean(armse)))
     sys.stdout.close()

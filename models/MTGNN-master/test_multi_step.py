@@ -135,4 +135,5 @@ for i in range(args.seq_out_len):
     rmse.append(metrics[2])
 t2_test = time.time()
 print("Total test time spent: {:.4f}".format(t2_test-t1_test))
+print("Total time in minutes: {:.2f}".format((t2_test-t1_test)/60))
 sys.stdout.close()

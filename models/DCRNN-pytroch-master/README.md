@@ -46,7 +46,7 @@ Run multi-step testing on trained model from horizon 1 to 12:
 
 Test on METR-LA:
 ```bash
-python multi_step_test.py
+python multi_step_test.py --log_test log_DCRNN_test_la_ver1.txt
 ```
 
 

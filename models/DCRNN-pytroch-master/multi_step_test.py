@@ -141,4 +141,5 @@ for horizon_i in range(1, y_truths.shape[1] + 1):
 
 t2 = time.time()
 print("Total time spent: {:.4f}".format(t2-t1))
+print("Total time in minutes: {:.2f}".format((t2-t1)/60))
 sys.stdout.close()

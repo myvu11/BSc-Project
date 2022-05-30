@@ -1,4 +1,4 @@
-# bachelor
+# Bachelor thesis
 Bachelor thesis about traffic flow prediciton.
 In here the four models that have been worked with can be found. 
 
