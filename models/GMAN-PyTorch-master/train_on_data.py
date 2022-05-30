@@ -3,6 +3,7 @@ import time
 from utils.utils_ import log_string, plot_train_val_loss
 from utils.utils_ import count_parameters, load_data
 
+import torch
 import torch.optim as optim
 import torch.nn as nn
 import numpy as np
@@ -49,6 +50,11 @@ parser.add_argument('--model_file', default='./data/GMAN-pems.pkl',
 parser.add_argument('--log_file', default='./data/log-pems',
                     help='log file')
 args = parser.parse_args()
+
+
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 log = open(args.log_file, 'w')
 log_string(log, str(args)[10: -1])
 T = 24 * 60 // args.time_slot  # Number of time steps in one day
@@ -65,6 +71,8 @@ del trainX, trainTE, valX, valTE, testX, testTE, mean, std
 log_string(log, 'compiling model...')
 
 model = GMAN(SE, args, bn_decay=0.1)
+
+
 loss_criterion = nn.MSELoss()
 
 optimizer = optim.Adam(model.parameters(), args.learning_rate)
@@ -76,7 +84,7 @@ log_string(log, 'trainable parameters: {:,}'.format(parameters))
 
 
 start = time.time()
-loss_train, loss_val = train(model, args, log, loss_criterion, optimizer, scheduler)
+loss_train, loss_val = train(model, args, log, loss_criterion, optimizer, scheduler, device)
 # plot_train_val_loss(loss_train, loss_val, 'figure/train_val_loss.png')
 end = time.time()
 log_string(log, 'Training time: %.1fmin' % ((end - start) / 60))
