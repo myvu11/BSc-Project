@@ -178,13 +178,14 @@ model_parameters = filter(lambda p: p.requires_grad, model.parameters())
 params = sum([np.prod(p.size()) for p in model_parameters])
 
 # print("Total number of trainable parameters:", params)
-log_file = (log, "Total number of trainable parameters: {}".format(params))
-print("Initialization complete. Start training... ==>", epochs, "epochs with", num_train_iteration_per_epoch, "batches per epoch.")
+# print("Initialization complete. Start training... ==>", epochs, "epochs with", num_train_iteration_per_epoch, "batches per epoch.")
+log_string(log, "Total number of trainable parameters: {}".format(params))
+log_string(log, "Initialization complete. Start training... ==> {} epochs with {} batches per epoch".format(epochs, num_train_iteration_per_epoch))
 
 
 for epoch in range(1, epochs + 1):
-    print("Epoch: ", epoch, " / ", epochs)
-    log_file = (log, "Start epoch {}".format(epoch))
+    # print("Epoch: ", epoch, " / ", epochs)
+    log_string(log, "Epoch: {} / {} ".format(epoch, epochs))
     model.train()
     
     train_iterator = train_data_loader.get_iterator()
@@ -256,11 +257,11 @@ for epoch in range(1, epochs + 1):
     # print('Epoch {:03d} | lr {:.6f} |Train loss {:.5f} | Val MAE {:.5f} | Val MAPE {:.5f} | Val RMSE {:.5f}| GPU {:.1f} MiB'.format(
     #     epoch, optimizer.param_groups[0]['lr'], total_loss / num_train_iteration_per_epoch, val_metrics[0], val_metrics[1], val_metrics[2], gpu_mem_alloc))
 
-    log_file(log, 'Epoch {:03d} | lr {:.6f} |Train loss {:.5f} | Val MAE {:.5f} | Val MAPE {:.5f} | Val RMSE {:.5f}| GPU {:.1f} MiB'.format(
+    log_string(log, "Epoch {:03d} | lr {:.6f} |Train loss {:.5f} | Val MAE {:.5f} | Val MAPE {:.5f} | Val RMSE {:.5f}| GPU {:.1f} MiB".format(
         epoch, optimizer.param_groups[0]['lr'], total_loss / num_train_iteration_per_epoch, val_metrics[0], val_metrics[1], val_metrics[2], gpu_mem_alloc))
 
 # print("Training complete.")
-log_file = (log, "Training complete.")
+log_string(log, "Training complete.")
 # sys.stdout.close()
 
 """
@@ -271,7 +272,7 @@ log_test = open('log_DCRNN_traintest.txt', 'w')
 # sys.stdout = open(log_test, "w")
 
 # print("\nmodel testing...")
-log_file_test = (log_test, "\nmodel testing...")
+log_string(log_test, "\nmodel testing...")
 
 test_iterator = test_data_loader.get_iterator()
 total_test_metrics = np.zeros(3)
@@ -290,6 +291,6 @@ with torch.no_grad():
         
 test_metrics = (total_test_metrics / num_test_iteration_per_epoch).tolist()
 # print('Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
-log_file_test = (log_test, 'Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
+log_string(log_test, 'Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
 
 # sys.stdout.close()
