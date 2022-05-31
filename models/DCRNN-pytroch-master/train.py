@@ -38,7 +38,6 @@ horizon = 12
 cl_decay_steps = 2000  # decrease teaching force ratio in global steps
 filter_type = "dual_random_walk"
 
-epochs = 100
 lr = 0.01
 weight_decay = 0.0
 epsilon = 1.0e-3
@@ -55,6 +54,10 @@ parser.add_argument('--checkpoints',type=str,default='./checkpoints/METR-LA/dcrn
 parser.add_argument('--sensor_ids',type=str,default='./data/sensor_graph/graph_sensor_ids.txt',help='sensor ids path')
 parser.add_argument('--sensor_distance',type=str,default='./data/sensor_graph/distances_la_2012.csv',help='sensor graph path')
 parser.add_argument('--recording',type=str,default='./data/processed/METR-LA',help='sensor graph path')
+
+parser.add_argument('--log_file',type=str,default='log_train_metr.txt',help='log file')
+parser.add_argument('--num_epochs',type=int,default=100,help='number of epochs')
+
 args = parser.parse_args()
 
 num_nodes = args.num_nodes
@@ -62,6 +65,7 @@ checkpoints = args.checkpoints
 sensor_ids = args.sensor_ids
 sensor_distance = args.sensor_distance
 recording = args.recording
+epochs = args.num_epochs
 
 # checkpoints = './checkpoints/METR-LA/dcrnn.pt'
 # sensor_ids = './data/sensor_graph/graph_sensor_ids.txt'
@@ -73,6 +77,13 @@ recording = args.recording
 # sensor_ids = './data/sensor_graph/graph_sensor_ids_bay.txt'
 # sensor_distance = './data/sensor_graph/distances_bay_2017.csv'
 # recording='data/processed/PEMS-BAY'
+
+
+# log string
+def log_string(log, string):
+    log.write(string + '\n')
+    log.flush()
+    print(string)
 
 
 """
@@ -159,15 +170,21 @@ num_val_iteration_per_epoch = math.ceil(data['x_val'].shape[0] / batch_size)
 num_test_iteration_per_epoch = math.ceil(data['x_test'].shape[0] / batch_size)
 
 # start training
-log_train = "log_DCRNN_" + str(args.data).replace("/","_") + "_train.txt"
-sys.stdout = open(log_train, "w")
+# log_train = "log_DCRNN_" + str(args.data).replace("/","_") + "_train.txt"
+# sys.stdout = open(log_train, "w")
+log = open(args.log_file, 'w')
+
 model_parameters = filter(lambda p: p.requires_grad, model.parameters())
 params = sum([np.prod(p.size()) for p in model_parameters])
-print("Total number of trainable parameters:", params)
+
+# print("Total number of trainable parameters:", params)
+log_file = (log, "Total number of trainable parameters: {}".format(params))
 print("Initialization complete. Start training... ==>", epochs, "epochs with", num_train_iteration_per_epoch, "batches per epoch.")
 
+
 for epoch in range(1, epochs + 1):
-    
+    print("Epoch: ", epoch, " / ", epochs)
+    log_file = (log, "Start epoch {}".format(epoch))
     model.train()
     
     train_iterator = train_data_loader.get_iterator()
@@ -236,19 +253,26 @@ for epoch in range(1, epochs + 1):
     # logging
     val_metrics = (total_val_metrics / num_val_iteration_per_epoch).tolist()
     
-    print('Epoch {:03d} | lr {:.6f} |Train loss {:.5f} | Val MAE {:.5f} | Val MAPE {:.5f} | Val RMSE {:.5f}| GPU {:.1f} MiB'.format(
+    # print('Epoch {:03d} | lr {:.6f} |Train loss {:.5f} | Val MAE {:.5f} | Val MAPE {:.5f} | Val RMSE {:.5f}| GPU {:.1f} MiB'.format(
+    #     epoch, optimizer.param_groups[0]['lr'], total_loss / num_train_iteration_per_epoch, val_metrics[0], val_metrics[1], val_metrics[2], gpu_mem_alloc))
+
+    log_file(log, 'Epoch {:03d} | lr {:.6f} |Train loss {:.5f} | Val MAE {:.5f} | Val MAPE {:.5f} | Val RMSE {:.5f}| GPU {:.1f} MiB'.format(
         epoch, optimizer.param_groups[0]['lr'], total_loss / num_train_iteration_per_epoch, val_metrics[0], val_metrics[1], val_metrics[2], gpu_mem_alloc))
 
-print("Training complete.")
-sys.stdout.close()
+# print("Training complete.")
+log_file = (log, "Training complete.")
+# sys.stdout.close()
 
 """
 DCRNN Testing
 """
-log_test = "log_DCRNN_" + str(args.data).replace("/","_") + "_traintest.txt"
-sys.stdout = open(log_test, "w")
+log_test = open('log_DCRNN_traintest.txt', 'w')
+# log_test = "log_DCRNN_" + str(args.data).replace("/","_") + "_traintest.txt"
+# sys.stdout = open(log_test, "w")
 
-print("\nmodel testing...")
+# print("\nmodel testing...")
+log_file_test = (log_test, "\nmodel testing...")
+
 test_iterator = test_data_loader.get_iterator()
 total_test_metrics = np.zeros(3)
 model.eval()
@@ -265,6 +289,7 @@ with torch.no_grad():
         total_test_metrics += eval_metrics(test_y_true.numpy(), test_y_hat.detach().cpu().numpy(), standard_scaler)
         
 test_metrics = (total_test_metrics / num_test_iteration_per_epoch).tolist()
-print('Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
+# print('Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
+log_file_test = (log_test, 'Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
 
-sys.stdout.close()
+# sys.stdout.close()
