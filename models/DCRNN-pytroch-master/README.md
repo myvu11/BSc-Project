@@ -11,6 +11,8 @@ The original tensorflow implementation: [liyaguang/DCRNN](https://github.com/liy
 
 The model is implemented using Python3.8.10 with dependencies specified in requirements.txt in bachelor directory
 
+Download data from the directory [data_DCRNN.zip](https://drive.google.com/drive/folders/1oM29OZrQfGAk-J2EvEO71PWYB1KT-OPw?usp=sharing)
+
 ## Training
 
 Firstly, you need to pre-process the data by using ```generate_dataset.py```:
