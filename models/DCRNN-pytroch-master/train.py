@@ -21,6 +21,14 @@ from net import DCRNNModel
 # import sys
 # sys.path.append("./xlwang_version")
 # from dcrnn_model import DCRNNModel
+# log string
+
+def log_string(log, string):
+    log.write(string + '\n')
+    log.flush()
+    print(string)
+
+
 
 """
 Hyperparameters
@@ -66,24 +74,7 @@ sensor_ids = args.sensor_ids
 sensor_distance = args.sensor_distance
 recording = args.recording
 epochs = args.num_epochs
-
-# checkpoints = './checkpoints/METR-LA/dcrnn.pt'
-# sensor_ids = './data/sensor_graph/graph_sensor_ids.txt'
-# sensor_distance = './data/sensor_graph/distances_la_2012.csv'
-# recording='data/processed/METR-LA'
-
-# for PEMS-BAY dataset
-# checkpoints = './checkpoints/PEMS-BAY/dcrnn.pt'
-# sensor_ids = './data/sensor_graph/graph_sensor_ids_bay.txt'
-# sensor_distance = './data/sensor_graph/distances_bay_2017.csv'
-# recording='data/processed/PEMS-BAY'
-
-
-# log string
-def log_string(log, string):
-    log.write(string + '\n')
-    log.flush()
-    print(string)
+log = open(args.log_file, 'w')
 
 
 """
@@ -170,10 +161,6 @@ num_val_iteration_per_epoch = math.ceil(data['x_val'].shape[0] / batch_size)
 num_test_iteration_per_epoch = math.ceil(data['x_test'].shape[0] / batch_size)
 
 # start training
-# log_train = "log_DCRNN_" + str(args.data).replace("/","_") + "_train.txt"
-# sys.stdout = open(log_train, "w")
-log = open(args.log_file, 'w')
-
 model_parameters = filter(lambda p: p.requires_grad, model.parameters())
 params = sum([np.prod(p.size()) for p in model_parameters])
 
@@ -184,8 +171,6 @@ log_string(log, "Initialization complete. Start training... ==> {} epochs with {
 
 
 for epoch in range(1, epochs + 1):
-    # print("Epoch: ", epoch, " / ", epochs)
-    log_string(log, "Epoch: {} / {} ".format(epoch, epochs))
     model.train()
     
     train_iterator = train_data_loader.get_iterator()
@@ -268,8 +253,6 @@ log_string(log, "Training complete.")
 DCRNN Testing
 """
 log_test = open('log_DCRNN_traintest.txt', 'w')
-# log_test = "log_DCRNN_" + str(args.data).replace("/","_") + "_traintest.txt"
-# sys.stdout = open(log_test, "w")
 
 # print("\nmodel testing...")
 log_string(log_test, "\nmodel testing...")
@@ -292,5 +275,3 @@ with torch.no_grad():
 test_metrics = (total_test_metrics / num_test_iteration_per_epoch).tolist()
 # print('Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
 log_string(log_test, 'Test MAE {:.5f} | Test MAPE {:.5f} | Test RMSE {:.5f}'.format(test_metrics[0], test_metrics[1], test_metrics[2]))
-
-# sys.stdout.close()

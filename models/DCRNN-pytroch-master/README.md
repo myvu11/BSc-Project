@@ -15,15 +15,17 @@ The model is implemented using Python3.8.10 with dependencies specified in requi
 
 Firstly, you need to pre-process the data by using ```generate_dataset.py```:
 
-```bash
 # METR-LA
+```bash
 python -m generate_dataset --output_dir=data/processed/METR-LA --traffic_df_filename=data/metr-la.h5
+```
 
 # PEMS-BAY
+```bash
 python -m generate_dataset --output_dir=data/processed/PEMS-BAY --traffic_df_filename=data/pems-bay.h5
 ```
 
- Then execute the training script (default setup on METR-LA):
+Then execute the training script (default setup on METR-LA):
 
 ```bash
 python train.py
@@ -31,22 +33,16 @@ python train.py
  
  For training on PEMS-BAY 
 ```bash
-python train.py --data data/PEMS-BAY --num_nodes 325 --checkpoints ./checkpoints/PEMS-BAY/dcrnn.pt --sensor_ids ./data/sensor_graph/graph_sensor_ids_bay.txt --sensor_distance ./data/sensor_graph/distances_bay_2017.csv --recording data/processed/PEMS-BAY
+python train.py --data data/PEMS-BAY --num_nodes 325 --checkpoints ./checkpoints/PEMS-BAY/dcrnn.pt --sensor_ids ./data/sensor_graph/graph_sensor_ids_bay.txt --sensor_distance ./data/sensor_graph/distances_bay_2017.csv --recording data/processed/PEMS-BAY --log_file log_DCRNN_train_bay.txt
 ```
 
 ## Testing
-
-Run single-step testing on trained model from horizon 1 to 12:
-
-```bash
-python single_step_test.py
-```
 
 Run multi-step testing on trained model from horizon 1 to 12:
 
 Test on METR-LA:
 ```bash
-python multi_step_test.py --log_test log_DCRNN_test_la_ver1.txt
+python multi_step_test.py --log_test log_DCRNN_test_la_ver.txt
 ```
 
 

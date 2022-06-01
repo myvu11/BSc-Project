@@ -18,6 +18,13 @@ import time
 import utils
 from net import DCRNNModel
 
+
+# saving print statements in a log file
+def log_string(log, string):
+    log.write(string + '\n')
+    log.flush()
+    print(string)
+
 """
 Hyperparameters same as training
 """
@@ -32,7 +39,8 @@ seq_length = 12
 horizon = 12
 cl_decay_steps = 2000  # decrease teaching force ratio in global steps
 filter_type = "dual_random_walk"
-# parse arguments for METR-LA
+
+# parse arguments, default set to METR-LA dataset
 parser = argparse.ArgumentParser()
 parser.add_argument('--num_nodes',type=int,default=207,help='number of nodes')
 parser.add_argument('--data',type=str,default='data/METR-LA',help='data path')
@@ -48,12 +56,8 @@ checkpoints = args.checkpoints
 sensor_ids = args.sensor_ids
 sensor_distance = args.sensor_distance
 recording = args.recording
+log = open(args.log_file, 'w')
 
-# for METR-LA
-# checkpoints = './checkpoints/METR-LA/dcrnn.pt'
-# sensor_ids = './data/sensor_graph/graph_sensor_ids.txt'
-# sensor_distance = './data/sensor_graph/distances_la_2012.csv'
-# recording='data/processed/METR-LA'
 
 
 """
@@ -83,7 +87,6 @@ Restore model from the checkpoint
 
 """
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# device = torch.device('cpu')
 
 model = DCRNNModel(adj_mx, 
                     diffusion_steps, 
@@ -125,9 +128,8 @@ with torch.no_grad():
 y_preds = torch.transpose(torch.reshape(y_preds, (horizon, -1, num_nodes, output_dim)), 0, 1)
 y_preds = y_preds.detach().cpu().numpy()  # cast to numpy array
 
-sys.stdout = open(args.log_test, "w")
 
-print("--------multi-step testing results--------")
+log_string(log, "--------multi-step testing results--------")
 for horizon_i in range(1, y_truths.shape[1] + 1):
     y_truth = y_truths[:, :horizon_i, :, :output_dim]
     y_pred = standard_scaler.inverse_transform(y_preds[:, :horizon_i, :, :])
@@ -136,10 +138,9 @@ for horizon_i in range(1, y_truths.shape[1] + 1):
     mae = utils.masked_mae_np(y_pred[:y_truth.shape[0]], y_truth, null_val=0.0)
     mape = utils.masked_mape_np(y_pred[:y_truth.shape[0]], y_truth, null_val=0.0)
     rmse = utils.masked_rmse_np(y_pred[:y_truth.shape[0]], y_truth, null_val=0.0)
-    print("Horizon {:02d}, MAE: {:.2f}, MAPE: {:.4f}, RMSE: {:.2f}".format(
+
+    log_string(log, "Horizon {:02d}, MAE: {:.2f}, MAPE: {:.4f}, RMSE: {:.2f}".format(
             horizon_i, mae, mape, rmse))
 
 t2 = time.time()
-print("Total time spent: {:.4f}".format(t2-t1))
-print("Total time in minutes: {:.2f}".format((t2-t1)/60))
-sys.stdout.close()
+log_string("Total time spent: {:.2f} minutes".format((t2-t1)/60))
