@@ -71,9 +71,9 @@ def train(model, args, log, loss_criterion, optimizer, scheduler, device):
                 X = valX[start_idx: end_idx]
                 TE = valTE[start_idx: end_idx]
                 label = valY[start_idx: end_idx]
-                pred = model(X, TE)
+                pred = model(X.to(device), TE.to(device))
                 pred = pred * std + mean
-                loss_batch = loss_criterion(pred, label)
+                loss_batch = loss_criterion(pred, label.to(device))
                 val_loss += loss_batch * (end_idx - start_idx)
                 del X, TE, label, pred, loss_batch
         val_loss /= num_val
